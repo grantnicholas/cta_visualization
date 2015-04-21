@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+  <div id="main-content">
+    <h1>CTA Ridership dashboard</h1>
+    <label id="controls"><input type="checkbox" id="sort">Sort by number of stops</input></label>
+
+    <div class="row">
+      <div id="routes-per-stop-g"></div>
+      <div id="routes-per-stop-m"></div>
+    </div>
+    <div class="table-container">
+      <div id="routes-per-stop-t"></div>
+    </div>
+
+    <div class="row">
+      <div id="stops-per-route-g"></div>
+      <div id="stops-per-route-m"></div>
+    </div>
+
+    <div class="table-container">
+      <div id="stops-per-route-t"></div>
+    </div>
+
+    <div class="row">
+      <div id="aboardings-g"></div>
+      <div id="aboardings-m"></div>
+    </div>
+
+    <div class="table-container">
+      <div id="aboardings-t"></div>
+    </div>
+
+  </div>
+
+</body>
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: relative;
+  background-color: ;
+}
+
+body{
+  background-color: #F0F7FF;
+}
+
+#main-content{
+  border-style: dashed;
+  border-width: thin;
+  border-color: black;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+div{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+  fill-opacity: .9;
+}
+
+.bar:hover{
+  fill: red;
+  fill-opacity: .9;
+}
+
+.bar ~ .text{
+  display: none;
+}
+
+.bar:hover ~ .text{
+  display: initial;
+}
+
+.x.axis path {
+  display: none;
+}
+
+
+
+html,body{
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    overflow-x: hidden; 
+}
+#main-content{
+  max-width: 1080px;
+  display: block;
+  margin: 0 auto;
+}
+
+.row{
+  width: 100%;
+  position: relative;
+  margin: 0;
+}
+
+#routes-per-stop-g, #stops-per-route-g, #aboardings-g{
+  width: 100%;
+}
+
+#routes-per-stop-m, #stops-per-route-m, #aboardings-m{
+  width: 100%;
+  height: 500px;
+}
+
+
+.table-container {
+    height: 500px;
+    width: 100%;
+    position: relative;
+}
+table {
+    display: flex;
+    flex-flow: column;
+    max-height: 500px;
+    width: 100%;
+}
+
+table thead {
+    /* head takes the height it requires, 
+    and it's not scaled when table is resized */
+    flex: 0 0 auto;
+    width: calc(100% - 0.9em);
+}
+table tbody {
+    /* body takes all the remaining available space */
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: scroll;
+}
+table tbody tr {
+    width: 100%;
+}
+table thead,
+table tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+table {
+    border: 1px solid lightgrey;
+}
+table td, table th {
+    padding: 0.3em;
+    border: 1px solid lightgrey;
+}
+table th {
+    border: 1px solid grey;
+}
+
+</style>
+<script script data-main="/js/application.js"  src="/js/require.js" ></script>
