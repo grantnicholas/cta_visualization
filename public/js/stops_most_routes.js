@@ -39,10 +39,11 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis)
         .append("text")
-          .attr("x", 100)
-          .attr("y", 100)
+          .attr("transform", "translate(0)")
+          .attr("x", 225)
+          .attr("y", 27)
           .style("text-anchor", "end")
-          .text("Number of routes at stop");
+          .text("Number of routes going through stop");
 
       svg.append("g")
           .attr("class", "y axis")
@@ -133,7 +134,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
         .attr("class", "bar")
         .style("fill-opacity", ".1" )
         .attr("width", x.rangeBand())
-        .attr("height", 500)
+        .attr("height", height)
         .attr("x", function(d){ return x(d.numroutes); })
         .attr("y", function(d){ return 0; })
         .on("click", onclickfunc);

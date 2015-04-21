@@ -37,6 +37,15 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
 
 
       svg2.append("g")
+        .attr("class", "axis")
+        .append("text")
+          .attr("x", 225)
+          .attr("y", height+27)
+          .style("text-anchor", "end")
+          .text("Route name");
+
+
+      svg2.append("g")
           .attr("class", "y axis")
           .call(yAxis)
         .append("text")
@@ -78,7 +87,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
                 routeTable.attr("id", "query-detail");
                 map.clearMarkers();
                 map.deleteMarkers();
-                
+
                 _.each(objects, function(obj){
                     map.addMarker(obj);
                 });
@@ -93,7 +102,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
         .attr("class", "bar")
         .style("fill-opacity", ".1" )
         .attr("width", x.rangeBand())
-        .attr("height", 500)
+        .attr("height", height)
         .attr("x", function(d){ return x(d.routename); })
         .attr("y", function(d){ return 0; })
         .on("click", onclickfunc);

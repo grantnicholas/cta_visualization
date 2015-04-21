@@ -12,6 +12,9 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
     var yAxis = helpers.chart_format.yAxis;
     var map = maps[2];
 
+    var formatxAxis = d3.format('.2f');
+    var xAxis = xAxis.tickFormat(formatxAxis);
+
 
 
     //SECOND GRAPH; LONGEST ROUTES
@@ -81,6 +84,16 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
       x.domain(data.map(function(d) { return d.bucket; }));
       y.domain([0, d3.max(data, function(d) { return d.objs.length; })]);
 
+      svg2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+        .append("text")
+          .attr("transform", "translate(0)")
+          .attr("x", 225)
+          .attr("y", 27)
+          .style("text-anchor", "end")
+          .text("Number of boardings");
 
       svg2.append("g")
           .attr("class", "y axis")
@@ -107,7 +120,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
             map.clearMarkers();
             map.deleteMarkers();
             _.each(d.objs, function(obj, i){
-              if(i>500){
+              if(i>300){
                 if(i%100==0){
                   map.addMarker(obj);
                 }
@@ -123,7 +136,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
         .attr("class", "bar")
         .style("fill-opacity", ".1" )
         .attr("width", x.rangeBand())
-        .attr("height", 500)
+        .attr("height", height)
         .attr("x", function(d){ return x(d.bucket); })
         .attr("y", function(d){ return 0; })
         .on("click", onclickfunc);
