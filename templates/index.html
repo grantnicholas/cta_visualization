@@ -1,14 +1,108 @@
-{% extends "layout.html" %}
-
-{% block body %}
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/stylesheets/charts.css">
+<script script data-main="/js/application.js"  src="/js/require.js" ></script>
 <body>
 
-<div id="main-container">
-  <h1>Data visualization</h1>
-  <h2>Built with Flask and D3</h2>
-  <svg class="chart">
-  </svg>
-</div>
+  <div id="main-content">
+    <h1>CTA Ridership dashboard</h1>
+    <label id="controls"><input type="checkbox" id="sort">Sort by number of stops</input></label>
+
+    <div class="row">
+      <div id="routes-per-stop-g"></div>
+      <div id="routes-per-stop-m"></div>
+    </div>
+    <div class="table-container">
+      <div id="routes-per-stop-t"></div>
+        <table id="query-detail-1">
+          <thead>
+            <tr>
+              <th>sid</th>
+              <th>id</th>
+              <th>route</th>
+              <th>offstreet</th>
+              <th>onstreet</th>
+              <th>alightings</th>
+              <th>boardings</th>
+              <th>latitude</th>
+              <th>longitude</th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+
+    <div class="row">
+      <div id="stops-per-route-g"></div>
+      <div id="stops-per-route-m"></div>
+    </div>
+
+    <div class="table-container">
+      <div id="stops-per-route-t"></div>
+        <table id="query-detail-2">
+          <thead>
+            <tr>
+              <th>sid</th>
+              <th>id</th>
+              <th>route</th>
+              <th>offstreet</th>
+              <th>onstreet</th>
+              <th>alightings</th>
+              <th>boardings</th>
+              <th>latitude</th>
+              <th>longitude</th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+
+    <div class="row">
+      <div id="aboardings-g"></div>
+      <div id="aboardings-m"></div>
+    </div>
+
+    <div class="table-container">
+      <div id="aboardings-t"></div>
+        <table id="query-detail-3">
+          <thead>
+            <tr>
+              <th>sid</th>
+              <th>id</th>
+              <th>route</th>
+              <th>offstreet</th>
+              <th>onstreet</th>
+              <th>alightings</th>
+              <th>boardings</th>
+              <th>latitude</th>
+              <th>longitude</th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+
+    <div class="row">
+      <div id="alightings-g"></div>
+      <div id="alightings-m"></div>
+    </div>
+
+    <div class="table-container">
+      <div id="alightings-t"></div>
+        <table id="query-detail-4">
+          <thead>
+            <tr>
+              <th>sid</th>
+              <th>id</th>
+              <th>route</th>
+              <th>offstreet</th>
+              <th>onstreet</th>
+              <th>alightings</th>
+              <th>boardings</th>
+              <th>latitude</th>
+              <th>longitude</th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+
+  </div>
 
 </body>
-{% endblock %}

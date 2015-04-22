@@ -74,33 +74,28 @@ def load_dat():
     db.session.commit()
 
 
-@app.route('/moststops')
+@app.route('/mostroutesatstop')
 def moststops():
     most_stops = db.session.query(Stop.sid, func.count(Stop.sid)).group_by(Stop.sid).all()
     bins = {}
     for sid,val in most_stops:
         if val in bins:
             bins[val]["count"] +=1 
-            bins[val]["stops"].append(sid)
+            bins[val]["stopids"].append(sid)
         else:
-            bins[val]= {"count" : 1, "stops" : [sid]}
+            bins[val]= {"count" : 1, "stopids" : [sid]}
 
     return json.dumps(bins)
 
 
-@app.route('/mostroutes')
+@app.route('/longest_routes')
 def mostroutes():
     longest_routes = db.session.query(Stop.route, func.count(Stop.route)).group_by(Stop.route).all()
     return json.dumps(longest_routes)
 
 
 @app.route('/')
-def main():
-    return render_template('index.html', var='hello world')
-
-
-@app.route('/test2', methods=['GET'])
-def testtwo():
-    return render_template('d3test2.html')
+def index():
+    return render_template('index.html')
 
 app.run()

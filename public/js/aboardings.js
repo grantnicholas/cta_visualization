@@ -6,19 +6,28 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
     var margin = helpers.chart_format.margin;
     var width = helpers.chart_format.width;
     var height = helpers.chart_format.height;
-    var x = helpers.chart_format.x;
-    var y = helpers.chart_format.y;
-    var xAxis = helpers.chart_format.xAxis;
-    var yAxis = helpers.chart_format.yAxis;
-    var map = maps[2];
+    
+
+
+    var x = d3.scale.ordinal()
+               .rangeRoundBands([0, width], .1, 1);
+    var y = d3.scale.linear()
+               .range([height, 0]);
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient("bottom");
+    var yAxis = d3.svg.axis()
+                   .scale(y)
+                   .orient("left");
 
     var formatxAxis = d3.format('.2f');
     var xAxis = xAxis.tickFormat(formatxAxis);
 
+    var map = maps[2];
 
 
-    //SECOND GRAPH; LONGEST ROUTES
-    var svg2 = d3.select("#aboardings-g").append("svg")
+    //THIRD GRAPH; BOARDINGS
+    var svg3 = d3.select("#aboardings-g").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -37,54 +46,19 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
     });
 
     function ajaxcallback(pdata){
-    // d3.json("/api/stop", function(error, pdata) {
 
       var data = pdata["objects"].map(function(dat){
         return dat;
       });
 
-      console.log(data);
-
-
-      //GROUP OBJECTS BY BOARDINGS
-
-      var max_boardings = d3.max(data, function(d){ return d.boardings; });
-      var groupings = _.range(0, max_boardings, max_boardings/10);
-
-      var grouped_objects = {};
-      _.each(groupings, function(g){
-        grouped_objects[g] = [];
-      });
-
-      _.each(data, function(d){
-        for(var i=0; i<groupings.length; i=i+1){
-          if(d.boardings <= groupings[i]){
-            grouped_objects[groupings[i]].push(d);
-            return;
-          }
-        }
-      });
-
-      var new_group = _.map(grouped_objects, function(v,k){
-        var newobj = {};
-        newobj.bucket = k;
-        newobj.objs = v;
-        return newobj;
-      });
-
-      console.log("grouped_objects", grouped_objects);
-      console.log("new_group", new_group);
-
-      data = new_group;
-
-
+      data = helpers.group_by_bins(data, "boardings", 20);
 
       data.sort(function(a,b){return a.bucket - b.bucket});
 
       x.domain(data.map(function(d) { return d.bucket; }));
       y.domain([0, d3.max(data, function(d) { return d.objs.length; })]);
 
-      svg2.append("g")
+      svg3.append("g")
           .attr("class", "x axis")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis)
@@ -93,9 +67,9 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
           .attr("x", 225)
           .attr("y", 27)
           .style("text-anchor", "end")
-          .text("Number of boardings");
+          .text("# of boardings");
 
-      svg2.append("g")
+      svg3.append("g")
           .attr("class", "y axis")
           .call(yAxis)
         .append("text")
@@ -103,9 +77,9 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
           .attr("y", 6)
           .attr("dy", ".71em")
           .style("text-anchor", "end")
-          .text("Number of stops per route");
+          .text("Number of stops within boarding range");
 
-      var bar = svg2.selectAll('.bar')
+      var bar = svg3.selectAll('.bar')
           .attr("class", "bar-container")
           .data(data)
           .enter().append('g')
@@ -113,22 +87,31 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
 
 
       var onclickfunc = function(d,i){
-            $('#query-detail-2').remove();
+            $('#query-detail-3').remove();
             var routeTable = tabulate(d.objs, ["sid", "id", "route", "offstreet", "onstreet", "alightings", 
                                                     "boardings", "latitude", "longitude"], "#aboardings-t");
-            routeTable.attr("id", "query-detail-2");
+            routeTable.attr("id", "query-detail-3");
             map.clearMarkers();
             map.deleteMarkers();
-            _.each(d.objs, function(obj, i){
-              if(i>300){
-                if(i%100==0){
-                  map.addMarker(obj);
-                }
+
+
+            //GROUP OBJECTS BY ROUTE
+            var grouped_objects = helpers.group_by_route(d.objs);
+
+            if(grouped_objects.length < 500){
+              _.each(grouped_objects, function(astop){
+                map.addStopMarker(astop);
+              });
+            }
+            else{
+              for(var i=0; i<500; i=i+1){
+                map.addStopMarker(grouped_objects[i]);
               }
-              else{
-                map.addMarker(obj);
+              for(var i=500; i<grouped_objects.length; i=i+200){
+                map.addStopMarker(grouped_objects[i]);
               }
-            });
+            }
+
             map.showMarkers();
       }
 
@@ -153,7 +136,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
          .attr("class", "text")
          .attr("x", function(d) { return x(d.bucket); })
          .attr("y", function(d) { return y(d.objs.length)-10; })
-         .text(function(d){return "({0},{1}) ".format(d.bucket, d.objs.length); });
+         .text(function(d){return "({0},{1}) ".format(helpers.round_to_two(d.bucket), d.objs.length); });
 
     }
 

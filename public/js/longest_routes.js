@@ -6,10 +6,18 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
     var margin = helpers.chart_format.margin;
     var width = helpers.chart_format.width;
     var height = helpers.chart_format.height;
-    var x = helpers.chart_format.x;
-    var y = helpers.chart_format.y;
-    var xAxis = helpers.chart_format.xAxis;
-    var yAxis = helpers.chart_format.yAxis;
+
+    var x = d3.scale.ordinal()
+               .rangeRoundBands([0, width], .1, 1);
+    var y = d3.scale.linear()
+               .range([height, 0]);
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient("bottom");
+    var yAxis = d3.svg.axis()
+                   .scale(y)
+                   .orient("left");
+
     var map = maps[1];
 
 
@@ -21,7 +29,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("/mostroutes", function(error, pdata) {
+    d3.json("/longest_routes", function(error, pdata) {
 
       var data = pdata.map(function(tup){
         return {
@@ -63,8 +71,11 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
 
 
       var onclickfunc = function(d,i){
-            $('#query-detail').remove();
+            $('#query-detail-2').remove();
             var rn = x.domain()[i];
+            console.log(x.domain());
+            console.log(x);
+            console.log("rn", rn);
             var filters = [
             {"name" : "route", 
             "op" : "like", 
@@ -84,7 +95,7 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
                 var objects = data["objects"];
                 var routeTable = tabulate(objects, ["sid", "id", "route", "offstreet", "onstreet", "alightings", 
                                                     "boardings", "latitude", "longitude"], "#stops-per-route-t");
-                routeTable.attr("id", "query-detail");
+                routeTable.attr("id", "query-detail-2");
                 map.clearMarkers();
                 map.deleteMarkers();
 

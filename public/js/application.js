@@ -11,7 +11,8 @@ require.config({
         "stops_most_routes" : "stops_most_routes",
         "longest_routes" : "longest_routes",
         "gmaps" : "gmaps",
-        "aboardsings" : "aboardings"
+        "aboardings" : "aboardings",
+        "alightings" : "alightings"
     },
     "shim": {
         "jquery": {
@@ -37,6 +38,9 @@ require.config({
         "aboardings": {
             "deps" : ["jquery", "underscore", "d3", "helpers", "gmaps"]
         },
+        "alightings": {
+            "deps" : ["jquery", "underscore", "d3", "helpers", "gmaps"]
+        },
         "gmaps": {
             "exports" : "maps",
             "deps" : ["jquery"]
@@ -47,19 +51,14 @@ require.config({
 
 define(['async!http://maps.google.com/maps/api/js?sensor=false',], function(){
 
-    require(["jquery", "underscore", "d3", "stops_most_routes", "longest_routes", "aboardings", "gmaps", "helpers"], function($, _, d3, maps, helpers) {
+    //DISABLE CONSOLE LOGGING FOR BETTER PERFORMANCE
+    //ENABLE FOR DEBUGGING AND DEV
+    //THIS IS IMPORTANT DO NOT IGNORE THIS
+    
+    window.console = {"log" : function(){}};
+
+    require(["jquery", "underscore", "d3", "stops_most_routes", "longest_routes", "aboardings", "alightings", "gmaps", "helpers"], function($, _, d3, maps, helpers) {
         console.log('requiring stuff');
-        // console.log(d3);
-
-        // require(["gmaps"], function(google) {
-        //     console.log('gmaps loaded');
-        //     console.log(maps);;
-        // });
-
-        // require(["helpers"], function(helpers) {
-        //     console.log('helpers loaded');
-        //     console.log(helpers);
-        // });
 
     });
 

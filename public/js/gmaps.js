@@ -96,12 +96,14 @@ define(function(require){
   	  var map1 = new google.maps.Map(document.getElementById('routes-per-stop-m'), mapOptions);
   	  var map2 = new google.maps.Map(document.getElementById('stops-per-route-m'), mapOptions);
   	  var map3 = new google.maps.Map(document.getElementById('aboardings-m'), mapOptions);
+  	  var map4 = new google.maps.Map(document.getElementById('alightings-m'), mapOptions);
 
   	  map1 = wrap_map(map1);
   	  map2 = wrap_map(map2);
   	  map3 = wrap_map(map3);
+  	  map4 = wrap_map(map4);
 
-  	  maps = [map1, map2, map3];
+  	  maps = [map1, map2, map3, map4];
   	  console.log('maps', maps);
     }
     google.maps.event.addDomListener(window, 'load', initialize);

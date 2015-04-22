@@ -6,10 +6,21 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
     var margin = helpers.chart_format.margin;
     var width = helpers.chart_format.width;
     var height = helpers.chart_format.height;
-    var x = helpers.chart_format.x;
-    var y = helpers.chart_format.y;
-    var xAxis = helpers.chart_format.xAxis;
-    var yAxis = helpers.chart_format.yAxis;
+
+
+
+
+    var x = d3.scale.ordinal()
+               .rangeRoundBands([0, width], .1, 1);
+    var y = d3.scale.linear()
+               .range([height, 0]);
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient("bottom");
+    var yAxis = d3.svg.axis()
+                   .scale(y)
+                   .orient("left");
+
     var map = maps[0];
 
     //FIRST GRAPH; STOPS THAT APPEAR ON THE MOST BUS ROUTES
@@ -19,13 +30,13 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("/moststops", function(error, pdata) {
+    d3.json("/mostroutesatstop", function(error, pdata) {
 
       var data = Object.keys(pdata).map(function(k){
         return {
           "numroutes" : +k,
           "numstops" : +pdata[k]["count"],
-          "stops" : pdata[k]["stops"]
+          "stopids" : pdata[k]["stopids"]
         }
       });
 
@@ -63,8 +74,8 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
 
       var onclickfunc = function(d,i){
         $('#query-detail-1').remove();
-        var stopids = d.stops;
-        console.log(stopids);
+        var stopids = d.stopids;
+        console.log("these stop ids", stopids);
         var filters = [
         {"name" : "sid", 
         "op" : "in", 
@@ -84,45 +95,17 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
           success: function(data){
             var objects = data["objects"];
             var routeTable = tabulate(objects, ["sid", "id", "route", "offstreet", "onstreet", "alightings", "boardings", "latitude", "longitude"], "#routes-per-stop-t");
+            routeTable.attr("id", "query-detail-1");
             map.clearMarkers();
             map.deleteMarkers();
 
-            //GROUP OBJECTS BY ROUTE
-
-            var grouped_objects = {};
-            _.each(objects, function(obj){
-                if(obj.sid in grouped_objects){
-                    if("routes" in grouped_objects[obj.sid]){
-                        grouped_objects[obj.sid].routes[obj.route] = true;
-                    }
-                    else{
-                        grouped_objects[obj.sid].routes ={};
-                        grouped_objects[obj.sid].routes[obj.route] = true;
-                    }
-                }
-                else{
-                    grouped_objects[obj.sid] = obj;
-                    grouped_objects[obj.sid].routes = {};
-                    grouped_objects[obj.sid].routes[obj.route] = true;
-                }
-            });
-
-            console.log("oldgroupies", grouped_objects);
-            grouped_objects = _.map(grouped_objects, function(g){
-                g.routes = _.map(g.routes, function(v,k){
-                    return k;
-                });
-                return g;
-            });
-
-            console.log("grouped_objects", grouped_objects);
+            var grouped_objects = helpers.group_by_route(objects);
 
             _.each(grouped_objects, function(astop){
                 map.addStopMarker(astop);
             });
             
             map.showMarkers();
-            routeTable.attr("id", "query-detail-1");
           }
 
         });
@@ -153,10 +136,6 @@ require(["jquery", "underscore", "d3", "helpers", "gmaps"], function($, _, d3, h
          .attr("x", function(d) { return x(d.numroutes)+5; })
          .attr("y", function(d) { return y(d.numstops+100); })
          .text(function(d){return d.numstops.toString()})
-
-
-      //WRITE THE DATA IN THE GRAPH TO A TABLE AS WELL
-      // tabulate(data, ["numroutes", "numstops"], "#routes-per-stop-t");
 
       //ON CLICK OF THE INPUT WE WANT TO REVERSE THE SORT OF THE GRAPH
       d3.select("#sort").on("change", change);
